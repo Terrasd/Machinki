@@ -2,7 +2,7 @@ import json
 import os
 
 class Car():
-    def __init__(self, name=0, model=0, color=0, L=0, price=0, D_LF=0, D_RF=0, D_LB=0, D_RB=0, fara_l=0, fara_r=0):
+    def __init__(self, name=0, model=0, color=0, L=0, price=0, D_LF=0, D_RF=0, D_LB=0, D_RB=0, fara_l=0, fara_r=0, korobka=0):
         self.name = name
         self.model = model
         self.color = color
@@ -14,23 +14,26 @@ class Car():
         self.D_RB = D_RB
         self.fara_l = fara_l
         self.fara_r = fara_r
+        self.korobka = korobka
         if name != 0:
             self.save()
 
     def info(self):
-        return f"""Марка: {self.name}
-Модель: {self.model}
-Цвет: {self.color}
-Литраж двигателя: {self.L} 
-Стоимость: {self.price}
-Состояние дверей:
-    Левая передняя дверь: {self.D_LF}
-    Правая передняя дверь: {self.D_RF}
-    Левая задняя дверь: {self.D_LB}
-    Правая задняя дверь: {self.D_RB}
-Состояние фар:
-    Левая: {self.fara_l}
-    Правая: {self.fara_r}"""
+        return f"""
+        Марка: {self.name}
+        Модель: {self.model}
+        Цвет: {self.color}
+        Литраж двигателя: {self.L} 
+        Стоимость: {self.price}
+        Состояние дверей:
+            Левая передняя дверь: {self.D_LF}
+            Правая передняя дверь: {self.D_RF}
+            Левая задняя дверь: {self.D_LB}
+            Правая задняя дверь: {self.D_RB}
+        Состояние фар:
+            Левая: {self.fara_l}
+            Правая: {self.fara_r}
+        Коробка: {self.korobka}"""
 
     def save(self):
         with open(f"data/cars/{self.name}.json", "w", encoding="utf-8") as w_file:
@@ -45,9 +48,11 @@ class Car():
                 "D_LB": self.D_LB,
                 "D_RB": self.D_RB,
                 "fara_l": self.fara_l,
-                "fara_r": self.fara_r
+                "fara_r": self.fara_r,
+                "korobka": self.korobka
             }
             json.dump(car, w_file)
+
         with open("data/names.json", "r", encoding="utf-8") as r_file:
             names = json.load(r_file)
             if self.name not in names["names"]:
@@ -63,6 +68,7 @@ class Car():
             self.name = car["name"]
             self.model = car["model"]
             self.color = car["color"]
+            self.korobka = car["korobka"]
             self.L = car["L"]
             self.price = car["price"]
             self.D_LF = car["D_LF"]
@@ -134,14 +140,12 @@ def is_number(str):
 
 while True:
 
-    print("1. Добавить автомобиль\n2. Изменить автомобиль\n3. Удалить автомобиль\n"
-          "4. Информация по машине\n"
-          "5. Выйти")
+    print("1. Добавить автомобиль\n2. Изменить автомобиль\n3. Удалить автомобиль\n4. Информация по машине\n5. Выйти")
 
     car_dict = {}
 
     a = str(input())
-    if is_number(a) == False:
+    if is_number(a) == 0:
         continue
     #Добавить авто
     if str(a) == '1':
@@ -155,7 +159,8 @@ while True:
                   D_LB = "True",
                   D_RB = "True",
                   fara_l = "Выкл.",
-                  fara_r = "Выкл.")
+                  fara_r = "Выкл.",
+                  korobka = input("Введите тип коробки: "))
         car_dict[car.name] = car
         print(PROV_na_dobavlenie(car.name))
         print("")
@@ -176,10 +181,11 @@ while True:
                       "4. Изменить литраж двигателя\n"
                       "5. Изменить стоимость\n"
                       "6. Добавить/убрать двери\n"
-                      "7. Вкл./выкл. фары\n"))
+                      "7. Вкл./выкл. фары\n"
+                      "8. Изменить коробку передач\n"))
         if n == 1:
             m = str(input("Введите новую марку: "))
-            new_car = Car(m, car.model, car.color, car.L, car.price, car.D_LF, car.D_RF, car.D_LB, car.D_RB, car.fara_l, car.fara_r)
+            new_car = Car(m, car.model, car.color, car.L, car.price, car.D_LF, car.D_RF, car.D_LB, car.D_RB, car.fara_l, car.fara_r, car.korobka)
             car.DEL()
             car = None
             car = new_car
@@ -297,6 +303,19 @@ while True:
                     continue
             else:
                 continue
+
+        if n == 8:
+            print("1. Механка.\n"
+                  "2. Автомат.\n")
+            y = int(input("Введите номер типа коробки: "))
+            if y == 1:
+                car.korobka = "Механка"
+                car.save()
+            if y == 2:
+                car.korobka = "Автомат"
+                car.save()
+            else:
+                continue
         else:
             continue
         print("")
@@ -336,5 +355,3 @@ while True:
 
     else:
         continue
-
-print("хуй")
